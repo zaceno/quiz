@@ -5,7 +5,8 @@
     "description": "A Quiz game",
     "main": "dist/index.html",
     "dependencies": {
-        "hyperapp": "^2.0.3"
+        "hyperapp": "^2.0.3",
+        "hyperapp-map": "^2.0.0"
     },
     "devDependencies": {
         "parcel-bundler": "^1.12.4"
@@ -16,6 +17,6 @@
     "author": "Zacharias Enochsson",
     "license": "MIT",
     "browserslist": [
-        "last 1 Chrome version"
+        "last 2 version, > 2%, ie 11"
     ]
 }
