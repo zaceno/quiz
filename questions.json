@@ -1,0 +1,151 @@
+{
+    "1": {
+        "question": "The goliath birdeater spider is native to ... ",
+        "options": ["Australia", "Indonesia", "South America", "North Africa"],
+        "correct": 2
+    },
+
+    "2": {
+        "question": "Who said: \"Whoever has will be given more. But whoever does not have, even what he has will be taken away from him\"?",
+        "options": ["Karl Marx", "Jesus", "Napoleon", "Buddha"],
+        "correct": 1
+    },
+
+    "3": {
+        "question": "Persephone was the greek godess of ...",
+        "options": ["Vegetation", "Commerce", "Cattle", "Music"],
+        "correct": 0
+    },
+
+    "4": {
+        "question": "Quetzalcoatl was the god of wind, air and learning to the ...",
+        "options": ["Mayans", "Incas", "Toltecs", "Aztecs"],
+        "correct": 3
+    },
+
+    "5": {
+        "question": "Complete this quote by Benjamin Franklin: \"An investment in ... always pays the best interest.\"",
+        "options": ["Bonds", "Love", "Knowledge", "Land"],
+        "correct": 2
+    },
+
+    "6": {
+        "question": "Who was the first man to reach the South Pole?",
+        "options": [
+            "Marco Polo",
+            "Jacque Cousteau",
+            "Roald Amundsen",
+            "Ernest Shackleton"
+        ],
+        "correct": 2
+    },
+
+    "7": {
+        "question": "A \"flying buttress\" is ... ",
+        "options": [
+            "An architectural element",
+            "A type of ladies gown",
+            "A pastry",
+            "A flower"
+        ],
+        "correct": 0
+    },
+
+    "8": {
+        "question": "Complete this quote by Socrates: \"... is not worth living.\"",
+        "options": [
+            "An ignorant life",
+            "An unexamined life",
+            "A decadent life",
+            "An impious life"
+        ],
+        "correct": 1
+    },
+
+    "9": {
+        "question": "Which of these men was not present at the Yalta conference of 1945?",
+        "options": [
+            "Franklin D Roosevelt",
+            "Charles De Gaulle",
+            "Joseph Stalin",
+            "Winston Churchill"
+        ],
+        "correct": 1
+    },
+
+    "10": {
+        "question": "Who you gonna call?",
+        "options": ["My friends!", "Yo momma!", "The Cops!", "Ghost Busters!"],
+        "correct": 3
+    },
+
+    "11": {
+        "question": "A \"bowline\" is ...",
+        "options": [
+            "a cut of beef",
+            "a term of navigation",
+            "a type of knot",
+            "a dance move"
+        ],
+        "correct": 2
+    },
+
+    "12": {
+        "question": "Which of these events is NOT part of a decathlon?",
+        "options": ["Shot put", "Javelin throw", "1500 meters", "Hammer throw"],
+        "correct": 3
+    },
+
+    "13": {
+        "question": "Which is the hottest planet in the solar system?",
+        "options": ["Mercury", "Venus", "Jupiter", "Saturn"],
+        "correct": 1
+    },
+
+    "14": {
+        "question": "What is the chemical symbol for potassium?",
+        "options": ["P", "F", "K", "T"],
+        "correct": 2
+    },
+
+    "15": {
+        "question": "What is the capital of New Zeeland?",
+        "options": ["Wellington", "Auckland", "Christchurch", "Hamilton"],
+        "correct": 0
+    },
+
+    "16": {
+        "question": "Which is the oldest, continously inhabited city in the world?",
+        "options": ["Istanbul", "Athens", "Jerusalem", "Damascus"],
+        "correct": 3
+    },
+
+    "17": {
+        "question": "Pope Gregory IX ordered the extermination of all ... across Europe.",
+        "options": ["Witches", "Prostitues", "Templars", "Cats"],
+        "correct": 3
+    },
+
+    "18": {
+        "question": "How old is Stonehenge (as far as we know today)?",
+        "options": ["3000 years", "5000 years", "10,000 years", "15,000 years"],
+        "correct": 1
+    },
+
+    "19": {
+        "question": "Neil Patrick Harris is an actor in the cast of the TV sitcom ...",
+        "options": [
+            "Friends",
+            "Parks & Recreation",
+            "How I met your mother",
+            "Community"
+        ],
+        "correct": 2
+    },
+
+    "20": {
+        "question": "This animal was sacred to the cult of Mithras",
+        "options": ["Bull", "Ram", "Lion", "Serpent"],
+        "correct": 0
+    }
+}
