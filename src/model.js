@@ -14,7 +14,7 @@ export const start = _ => {
     ]
 }
 
-const gotQuestion = (state, response) => ({
+export const gotQuestion = (state, response) => ({
     ...state,
     questions: {
         ...state.questions,
@@ -50,7 +50,7 @@ export const countIncorrect = state =>
 
 export const countUnanswered = state => countQuestions(state, q => !q.answer)
 
-export const isEnded = state => state.step === state.series.length
+export const isEnded = state => state.step >= state.series.length
 
 export const isStarted = state => !!state
 

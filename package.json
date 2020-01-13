@@ -3,20 +3,27 @@
     "version": "1.0.0",
     "private": true,
     "description": "A Quiz game",
-    "main": "dist/index.html",
     "dependencies": {
         "hyperapp": "^2.0.3",
         "hyperapp-map": "^2.0.0"
     },
     "devDependencies": {
+        "ava": "^2.4.0",
+        "esm": "^3.2.25",
         "parcel-bundler": "^1.12.4"
     },
     "scripts": {
-        "start": "parcel src/index.html"
+        "start": "parcel src/index.html",
+        "test": "ava"
     },
     "author": "Zacharias Enochsson",
     "license": "MIT",
     "browserslist": [
         "last 2 version, > 2%, ie 11"
-    ]
+    ],
+    "ava": {
+        "require": [
+            "esm"
+        ]
+    }
 }
