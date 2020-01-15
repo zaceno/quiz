@@ -24,33 +24,39 @@ const ResultScreen = ({ state }) => (
     </main>
 )
 
-const Question = ({ question, options, answer }) => (
+const Question = ({ state }) => (
     <div>
-        <p>{question}</p>
+        <p>{model.getQuestion(state)}</p>
         <ul>
-            {options.map((text, index) => (
+            {model.getOptions(state).map(opt => (
                 <li>
                     <input
                         type="radio"
-                        checked={answer === index}
-                        onclick={[model.answer, index]}
+                        checked={model.getAnswer(state) === opt}
+                        onclick={[model.answer, opt]}
                     />
-                    {text}
+                    {opt}
                 </li>
             ))}
         </ul>
     </div>
 )
 
-const GameScreen = ({ state, question = model.currentQuestion(state) }) => (
+const GameScreen = ({ state, fetching = !model.getQuestion(state) }) => (
     <main>
-        {question ? (
-            <Question {...question} />
+        {!fetching ? (
+            <Question state={state} />
         ) : (
             <marquee>...fetching...</marquee>
         )}
-        <button disabled={!question} onclick={model.next}>
+        <button disabled={fetching} onclick={model.next}>
             Next
+        </button>
+        <button
+            disabled={fetching || model.isBisectorUsed(state)}
+            onclick={model.bisect}
+        >
+            Bisect!
         </button>
     </main>
 )

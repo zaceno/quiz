@@ -1,42 +1,58 @@
 import test from 'ava'
 import * as model from '../src/model'
 
+const testState = (length, fetched = true) => {
+    const series = [...Array(length).keys()].map(x => '' + (x + 1))
+    const step = 0
+    const questions = series.reduce((o, id) => {
+        o[id] = fetched
+            ? {
+                  id,
+                  question: 'Q' + id,
+                  options: ['foo', 'bar', 'baz', 'bop'],
+                  correct: 1,
+              }
+            : null
+        return o
+    }, {})
+    return { questions, series, step }
+}
+
 test('isStarted', t => {
     t.false(model.isStarted())
     let [state, ...effects] = model.start()
     t.true(model.isStarted(state))
 })
 
-test('gotQuestion', t => {
-    let state = { questions: { 1337: null, 42: null }, foo: 'bar' }
-    state = model.gotQuestion(state, { id: 1337, bing: 'bong' })
-    state = model.gotQuestion(state, { id: 42, ping: 'pong' })
-    t.deepEqual(state, {
-        questions: {
-            1337: { id: 1337, bing: 'bong' },
-            42: { id: 42, ping: 'pong' },
-        },
-        foo: 'bar',
-    })
+test('getQuestion returns null if not started', t => {
+    t.is(model.getQuestion(), null)
 })
 
-test('next & currentQuestion', t => {
-    let state = {
-        questions: { 42: 'foo', 99: 'bar' },
-        series: [42, 99],
-        step: 0,
-    }
-    t.is(model.currentQuestion(state), 'foo')
+test('getQuestion returns null if ended', t => {
+    let state = testState(1)
     state = model.next(state)
-    t.is(model.currentQuestion(state), 'bar')
+    t.is(model.getQuestion(state), null)
 })
 
-test('isEnded', t => {
-    let state = {
-        series: [42, 99, 1337],
-        step: 0,
-    }
+test('getQuestion retuns null if not fetched', t => {
+    t.is(model.getQuestion(testState(1, false)), null)
+})
+
+test('getQuestion returns current question if fetched', t => {
+    const expect = { id: 1, foo: 'bar' }
+    let state = testState(1, false)
+    state = model.gotQuestionResponse(state, { id: 1, question: 'foo' })
+    t.is(model.getQuestion(state), 'foo')
+})
+
+test('next steps to the next question', t => {
+    let state = testState(3)
     state = model.next(state)
+    t.is(model.getQuestion(state), 'Q2')
+})
+
+test('isEnded true when stepped past last question', t => {
+    let state = testState(2)
     t.false(model.isEnded(state))
     state = model.next(state)
     t.false(model.isEnded(state))
@@ -44,54 +60,123 @@ test('isEnded', t => {
     t.true(model.isEnded(state))
 })
 
-test('answer', t => {
-    let state = {
-        questions: {
-            42: { id: 42 },
-            99: { id: 99 },
-            1337: { id: 1337 },
-        },
-        series: [1337, 42, 99],
-        step: 1,
-    }
-    t.deepEqual(model.answer(state, 'foo'), {
-        questions: {
-            42: { id: 42, answer: 'foo' },
-            99: { id: 99 },
-            1337: { id: 1337 },
-        },
-        series: [1337, 42, 99],
-        step: 1,
-    })
+test('getAnswer returns the current answer', t => {
+    let state = testState(1)
+    state = model.answer(state, 'baz')
+    t.is(model.getAnswer(state), 'baz')
+})
+
+test('getAnswer returns null if not started', t => {
+    t.is(model.getAnswer(), null)
+})
+
+test('getAnswer returns null if ended', t => {
+    let state = testState(1)
+    state = model.next(state)
+    t.is(model.getAnswer(state), null)
+})
+
+test('getAnswer returns null if no answer given', t => {
+    let state = testState(1)
+    t.is(model.getAnswer(state), null)
+})
+
+test('an invalid answer is the same as no answer', t => {
+    let state = testState(1)
+    state = model.answer(state, 'baz')
+    state = model.answer(state, 'bazinga')
+    t.is(model.getAnswer(state), null)
+})
+
+test('new answers overwrite previous ones', t => {
+    let state = testState(1)
+    state = model.answer(state, 'baz')
+    state = model.answer(state, 'foo')
+    t.is(model.getAnswer(state), 'foo')
+})
+
+test('answers do not flow over to the next question', t => {
+    let state = testState(1)
+    state = model.answer(state, 'baz')
+    state = model.next(state)
+    t.is(model.getAnswer(state), null)
 })
 
 test('count correct, incorrect, unanswered', t => {
-    let state = {
-        questions: {
-            1: { correct: 1 },
-            2: { correct: 1 },
-            3: { correct: 1 },
-            4: { correct: 1 },
-            5: { correct: 1 },
-            6: { correct: 1 },
-            7: { correct: 1 },
-            8: { correct: 1 },
-            9: { correct: 1 },
-        },
-        series: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-        step: 0,
-    }
-    const answers = [0, 0, 1, 2, 0, 1, 1, 2, 0]
-    const expCorrect = 3
-    const expIncorrect = 2
-    const expUnanswered = 4
+    let state = testState(9)
+    ;[null, null, 'foo', 'bar', null, 'foo', 'foo', 'bar', null].forEach(
+        val => {
+            if (val) state = model.answer(state, val)
+            state = model.next(state)
+        }
+    )
+    t.is(model.countCorrect(state), 2)
+    t.is(model.countIncorrect(state), 3)
+    t.is(model.countUnanswered(state), 4)
+})
 
-    answers.forEach(val => {
-        if (val > 0) state = model.answer(state, val)
-        state = model.next(state)
-    })
+test('count correct, incorrect, unanswered null if not started', t => {
+    t.is(model.countCorrect(), null)
+    t.is(model.countIncorrect(), null)
+    t.is(model.countUnanswered(), null)
+})
 
-    t.is(model.countCorrect(state), expCorrect)
-    t.is(model.countIncorrect(state), expIncorrect)
-    t.is(model.countUnanswered(state), expUnanswered)
+test('getOptions returns null if not started', t => {
+    t.is(model.getOptions(), null)
+})
+
+test('getOptions returns null if ended', t => {
+    let state = testState(1)
+    state = model.next(state)
+    t.is(model.getOptions(state), null)
+})
+
+test('getOptions returns options for current question', t => {
+    let state = testState(3)
+    state.questions[2].options = ['zip', 'zorp']
+    state = model.next(state)
+    t.deepEqual(model.getOptions(state), ['zip', 'zorp'])
+})
+
+test('bisecting makes getOptions return only the correct half', t => {
+    let s1 = testState(1)
+    s1.questions['1'].correct = 0
+    t.deepEqual(model.getOptions(model.bisect(s1)), ['foo', 'bar'])
+
+    let s2 = testState(1)
+    s2.questions['1'].correct = 1
+    t.deepEqual(model.getOptions(model.bisect(s2)), ['foo', 'bar'])
+
+    let s3 = testState(1)
+    s3.questions['1'].correct = 2
+    t.deepEqual(model.getOptions(model.bisect(s3)), ['baz', 'bop'])
+
+    let s4 = testState(1)
+    s4.questions['1'].correct = 3
+    t.deepEqual(model.getOptions(model.bisect(s4)), ['baz', 'bop'])
+})
+
+test('bisector stops being active for the next question', t => {
+    let state = testState(2)
+    state = model.bisect(state)
+    state = model.next(state)
+    t.deepEqual(model.getOptions(state), ['foo', 'bar', 'baz', 'bop'])
+})
+
+test('bisection resets a previously given answer', t => {
+    let state = testState(1)
+    state = model.answer(state, 'foo')
+    state = model.bisect(state)
+    t.is(model.getAnswer(state), null)
+})
+
+test('isBisectorUsed', t => {
+    let state = testState(5)
+    t.false(model.isBisectorUsed(state))
+    state = model.next(state)
+    t.false(model.isBisectorUsed(state))
+    state = model.bisect(state)
+    t.true(model.isBisectorUsed(state))
+    state = model.next(state)
+    t.true(model.isBisectorUsed(state))
 })
