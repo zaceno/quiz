@@ -1,6 +1,6 @@
 import test from 'ava'
 import * as model from '../src/model'
-import { TIMER_DURATION } from '../src/const'
+import { TIMER_DURATION, TIMER_EXTENSION } from '../src/const'
 import { update as updateTime } from '../src/lib/time'
 
 const testState = (length, fetched = true) => {
@@ -239,4 +239,42 @@ test('when the series is ended, there is no more timer', t => {
     state = model.setQuestion(state, { id: '1' })
     state = model.setTime(state, TIMER_DURATION + 1000 + 1)
     t.is(model.timeRemaining(state), null)
+})
+
+test('timer can be extended', t => {
+    let state = testState(1, false)
+    state = model.setTime(state, 0)
+    state = model.setQuestion(state, { id: '1' })
+    state = model.setTime(state, 1000)
+    //timer remaingin is now TIMER_DURATION -1000
+    state = model.extend(state)
+    t.is(model.timeRemaining(state), TIMER_DURATION - 1000 + TIMER_EXTENSION)
+})
+
+test('timer can be extended just once in a series', t => {
+    let state = testState(2, false)
+    t.false(model.isExtendUsed(state))
+    state = model.setTime(state, 1000)
+    state = model.setQuestion(state, { id: '1' })
+    state = model.setQuestion(state, { id: '2' })
+    t.false(model.isExtendUsed(state))
+
+    state = model.setTime(state, 2000)
+    state = model.extend(state)
+    t.true(model.isExtendUsed(state))
+    t.is(model.timeRemaining(state), TIMER_DURATION - 1000 + TIMER_EXTENSION)
+
+    state = model.setTime(state, 3000)
+    state = model.extend(state)
+    t.true(model.isExtendUsed(state))
+    t.is(model.timeRemaining(state), TIMER_DURATION - 2000 + TIMER_EXTENSION)
+
+    state = model.setTime(state, 4000)
+    state = model.next(state)
+    t.true(model.isExtendUsed(state))
+
+    state = model.setTime(state, 5000)
+    state = model.extend(state)
+    t.true(model.isExtendUsed(state))
+    t.is(model.timeRemaining(state), TIMER_DURATION - 1000)
 })

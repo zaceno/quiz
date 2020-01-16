@@ -73,10 +73,7 @@ const GameScreen = ({ state, fetching = !model.getQuestion(state) }) => (
                         padding: '0',
                         margin: '0',
                         backgroundColor: 'cornflowerblue',
-                        width:
-                            (model.timeRemaining(state) / TIMER_DURATION) *
-                                100 +
-                            '%',
+                        width: model.getTimerPercent(state) + '%',
                     }}
                 ></div>
                 <p
@@ -106,6 +103,12 @@ const GameScreen = ({ state, fetching = !model.getQuestion(state) }) => (
             onclick={model.bisect}
         >
             Bisect!
+        </button>
+        <button
+            disabled={fetching || model.isExtendUsed(state)}
+            onclick={model.extend}
+        >
+            Extend!
         </button>
     </main>
 )

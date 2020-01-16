@@ -1,4 +1,9 @@
-import { POOL_SIZE, SERIES_LENGTH, TIMER_DURATION } from './const'
+import {
+    POOL_SIZE,
+    SERIES_LENGTH,
+    TIMER_DURATION,
+    TIMER_EXTENSION,
+} from './const'
 import randomIntList from './lib/random-int-list'
 import fetchQuestion from './lib/fetch-question'
 import { update as updateTime, subscribe as subscribeTime } from './lib/time'
@@ -67,6 +72,7 @@ export const next = state => ({
     ...state,
     step: state.step + 1,
     bisectorActive: false,
+    extendActive: false,
     timerUntil: state.now + TIMER_DURATION,
 })
 
@@ -131,3 +137,22 @@ export const timeRemaining = state =>
 export const subscriptions = state => [
     isStarted(state) && !isEnded(state) && subscribeTime(setTime),
 ]
+
+export const extend = state =>
+    !state || state.extendUsed
+        ? state
+        : {
+              ...state,
+              extendActive: true,
+              extendUsed: true,
+              timerUntil:
+                  state.timerUntil && state.timerUntil + TIMER_EXTENSION,
+          }
+
+export const isExtendUsed = state => !!(state && state.extendUsed)
+
+export const getTimerPercent = state => {
+    const duration = TIMER_DURATION + (state.extendActive ? TIMER_EXTENSION : 0)
+    const remaining = timeRemaining(state)
+    return Math.round((100 * remaining) / duration)
+}
