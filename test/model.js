@@ -1,5 +1,7 @@
 import test from 'ava'
 import * as model from '../src/model'
+import { TIMER_DURATION } from '../src/const'
+import { update as updateTime } from '../src/lib/time'
 
 const testState = (length, fetched = true) => {
     const series = [...Array(length).keys()].map(x => '' + (x + 1))
@@ -15,7 +17,7 @@ const testState = (length, fetched = true) => {
             : null
         return o
     }, {})
-    return { questions, series, step }
+    return { questions, series, step, now: 0 }
 }
 
 test('isStarted', t => {
@@ -41,7 +43,7 @@ test('getQuestion retuns null if not fetched', t => {
 test('getQuestion returns current question if fetched', t => {
     const expect = { id: 1, foo: 'bar' }
     let state = testState(1, false)
-    state = model.gotQuestionResponse(state, { id: 1, question: 'foo' })
+    state = model.setQuestion(state, { id: 1, question: 'foo' })
     t.is(model.getQuestion(state), 'foo')
 })
 
@@ -179,4 +181,62 @@ test('isBisectorUsed', t => {
     t.true(model.isBisectorUsed(state))
     state = model.next(state)
     t.true(model.isBisectorUsed(state))
+})
+
+test('When the first question is availble, a timer is started', t => {
+    let state = testState(1, false)
+    t.is(model.timeRemaining(), null)
+    t.is(model.timeRemaining(state), null)
+    state = model.setTime(state, 1000)
+    state = model.setQuestion(state, { id: '1' })
+    t.is(model.timeRemaining(state), TIMER_DURATION)
+})
+
+test('A second question being loaded later will not affect the current timer', t => {
+    let state = testState(2, false)
+    state = model.setTime(state, 1000)
+    state = model.setQuestion(state, { id: '1' })
+    state = model.setTime(state, 5000)
+    state = model.setQuestion(state, { id: '2' })
+    t.is(model.timeRemaining(state), TIMER_DURATION - 4000)
+})
+
+test('when moving to the next answer, timer is restarted', t => {
+    let state = testState(2, false)
+    state = model.setTime(state, 1000)
+    state = model.setQuestion(state, { id: '1' })
+    state = model.setQuestion(state, { id: '2' })
+    state = model.setTime(state, 5000)
+    state = model.next(state)
+    t.is(model.timeRemaining(state), TIMER_DURATION)
+})
+
+test('when moving to the next answer, in case it hasnt been fetched yet, timer waits', t => {
+    let state = testState(2, false)
+    state = model.setTime(state, 1000)
+    state = model.setQuestion(state, { id: '1' })
+    state = model.setTime(state, 5000)
+    state = model.next(state)
+    t.is(model.timeRemaining(state), null)
+    state = model.setTime(state, 7000)
+    state = model.setQuestion(state, { id: '2' })
+    t.is(model.timeRemaining(state), TIMER_DURATION)
+})
+
+test('when time is up, the next question is stepped forward, and a new timer is started', t => {
+    let state = testState(2, false)
+    state = model.setTime(state, 1000)
+    state = model.setQuestion(state, { id: '1', question: 'Q1' })
+    state = model.setQuestion(state, { id: '2', question: 'Q2' })
+    state = model.setTime(state, TIMER_DURATION + 1000 + 1)
+    t.is(model.getQuestion(state), 'Q2')
+    t.is(model.timeRemaining(state), TIMER_DURATION)
+})
+
+test('when the series is ended, there is no more timer', t => {
+    let state = testState(1, false)
+    state = model.setTime(state, 1000)
+    state = model.setQuestion(state, { id: '1' })
+    state = model.setTime(state, TIMER_DURATION + 1000 + 1)
+    t.is(model.timeRemaining(state), null)
 })

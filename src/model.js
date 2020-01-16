@@ -1,6 +1,7 @@
-import { POOL_SIZE, SERIES_LENGTH } from './const'
+import { POOL_SIZE, SERIES_LENGTH, TIMER_DURATION } from './const'
 import randomIntList from './lib/random-int-list'
 import fetchQuestion from './lib/fetch-question'
+import { update as updateTime, subscribe as subscribeTime } from './lib/time'
 
 export const start = _ => {
     const series = randomIntList(POOL_SIZE, SERIES_LENGTH)
@@ -10,21 +11,32 @@ export const start = _ => {
             step: 0,
             questions: series.reduce((o, id) => ((o[id] = null), o), {}),
         },
-        ...series.map(id => fetchQuestion(id, gotQuestionResponse)),
+        updateTime(setTime),
+        ...series.map(id => fetchQuestion(id, setQuestion)),
     ]
 }
 
 export const isStarted = state => !!state
 
-export const gotQuestionResponse = (state, response) => ({
+export const setQuestion = (state, response) => ({
     ...state,
     questions: {
         ...state.questions,
         [response.id]: response,
     },
+
+    timerUntil:
+        response.id === state.series[state.step]
+            ? state.now + TIMER_DURATION
+            : state.timerUntil,
 })
 
-export const reset = _ => null
+export const setTime = (state, now) => {
+    const news = { ...state, now }
+    return timeRemaining(news) < 0 ? next(news) : news
+}
+
+export const reset = state => null
 
 export const getQuestion = state =>
     state == null || !state.questions[state.series[state.step]]
@@ -55,6 +67,7 @@ export const next = state => ({
     ...state,
     step: state.step + 1,
     bisectorActive: false,
+    timerUntil: state.now + TIMER_DURATION,
 })
 
 export const isEnded = state => state.step >= state.series.length
@@ -107,3 +120,14 @@ export const isBisectorUsed = state =>
 
 export const isBisectorActive = state =>
     !!state && state.series[state.step] && !!state.bisectorUsed
+
+export const timeRemaining = state =>
+    !isStarted(state) ||
+    isEnded(state) ||
+    !state.questions[state.series[state.step]]
+        ? null
+        : state.timerUntil - state.now
+
+export const subscriptions = state => [
+    isStarted(state) && !isEnded(state) && subscribeTime(setTime),
+]

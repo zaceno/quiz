@@ -1,5 +1,6 @@
 import { h, app } from 'hyperapp'
 import * as model from './model'
+import { TIMER_DURATION } from './const'
 
 const StartScreen = () => (
     <main>
@@ -49,6 +50,54 @@ const GameScreen = ({ state, fetching = !model.getQuestion(state) }) => (
         ) : (
             <marquee>...fetching...</marquee>
         )}
+        {model.timeRemaining(state) != null && (
+            <div
+                style={{
+                    display: 'inline-block',
+                    border: '1px black solid',
+                    height: '18px',
+                    width: '100px',
+                    padding: '0',
+                    margin: '0',
+                    backgroundColor: '#888',
+                    position: 'relative',
+                    verticalAlign: 'middle',
+                }}
+            >
+                <div
+                    style={{
+                        position: 'absolute',
+                        top: '0',
+                        left: '0',
+                        bottom: '0',
+                        padding: '0',
+                        margin: '0',
+                        backgroundColor: 'cornflowerblue',
+                        width:
+                            (model.timeRemaining(state) / TIMER_DURATION) *
+                                100 +
+                            '%',
+                    }}
+                ></div>
+                <p
+                    style={{
+                        position: 'absolute',
+                        top: '0',
+                        left: '0',
+                        width: '100%',
+                        height: '100%',
+                        padding: '0',
+                        margin: '0',
+                        fontSize: '15px',
+                        lineHeight: '18px',
+                        textAlign: 'center',
+                        color: 'white',
+                    }}
+                >
+                    {Math.round(model.timeRemaining(state) / 1000)}s
+                </p>
+            </div>
+        )}
         <button disabled={fetching} onclick={model.next}>
             Next
         </button>
@@ -82,4 +131,5 @@ const MainView = ({ state }) => (
 app({
     node: document.getElementById('app'),
     view: state => <MainView state={state} />,
+    subscriptions: state => [...model.subscriptions(state)],
 })
