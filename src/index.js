@@ -1,10 +1,9 @@
 import { h, app } from 'hyperapp'
-import * as model from './model'
-import { TIMER_DURATION } from './const'
+import * as model from './model/index'
 
 const StartScreen = () => (
     <main>
-        <button onclick={model.start}>Start</button>
+        <button onclick={model.Start}>Start</button>
     </main>
 )
 
@@ -34,7 +33,7 @@ const Question = ({ state }) => (
                     <input
                         type="radio"
                         checked={model.getAnswer(state) === opt}
-                        onclick={[model.answer, opt]}
+                        onclick={[model.Answer, opt]}
                     />
                     {opt}
                 </li>
@@ -95,18 +94,18 @@ const GameScreen = ({ state, fetching = !model.getQuestion(state) }) => (
                 </p>
             </div>
         )}
-        <button disabled={fetching} onclick={model.next}>
+        <button disabled={fetching} onclick={model.Next}>
             Next
         </button>
         <button
-            disabled={fetching || model.isBisectorUsed(state)}
-            onclick={model.bisect}
+            disabled={fetching || model.isBisectUsed(state)}
+            onclick={model.Bisect}
         >
             Bisect!
         </button>
         <button
             disabled={fetching || model.isExtendUsed(state)}
-            onclick={model.extend}
+            onclick={model.Extend}
         >
             Extend!
         </button>
@@ -118,7 +117,7 @@ const MainView = ({ state }) => (
         <header>
             Trivia Game!
             {model.isStarted(state) && (
-                <button onclick={model.reset}>Quit</button>
+                <button onclick={model.Reset}>Quit</button>
             )}
         </header>
         {!model.isStarted(state) ? (
@@ -133,6 +132,7 @@ const MainView = ({ state }) => (
 
 app({
     node: document.getElementById('app'),
+    init: model.init,
     view: state => <MainView state={state} />,
     subscriptions: state => [...model.subscriptions(state)],
 })
