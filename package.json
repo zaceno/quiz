@@ -14,7 +14,8 @@
     },
     "scripts": {
         "start": "parcel src/index.html",
-        "test": "ava"
+        "test": "ava",
+        "build": "rm -rf docs/ && parcel build -d docs/ --public-url /quiz/ src/index.html"
     },
     "author": "Zacharias Enochsson",
     "license": "MIT",
