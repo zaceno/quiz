@@ -1,3 +1,14 @@
+/*
+
+This is the main model of the app.
+
+File is structured into three sections. 
+1. The initialization, and subscriptions functions for starting the app
+2. All the actions (state transforms)
+3. All the queries (compute values from state)
+
+*/
+
 import {
     POOL_SIZE,
     SERIES_LENGTH,
@@ -14,6 +25,8 @@ import * as timer from './timer'
 import * as question from './question'
 import * as sequence from './sequence'
 
+// --- INIT & SUBS  ---
+
 export const init = {
     bisection: lifeline.init,
     extension: lifeline.init,
@@ -24,6 +37,8 @@ export const init = {
 export const subscriptions = state => [
     timer.isRunning(state.timer) && subscribeTime(SetTime),
 ]
+
+// --- ACTIONS ---
 
 export const Reset = state => init
 
@@ -37,6 +52,8 @@ export const SetList = (state, list) => [
     ...list.map(id => fetchQuestion(id, SetQuestion)),
 ]
 
+// Only meant to be called as a response from the
+// fetchQuestion effect
 export const SetQuestion = (state, question) => ({
     ...state,
     questions: sequence.set(state.questions, question.id, question),
@@ -46,11 +63,15 @@ export const SetQuestion = (state, question) => ({
             : state.timer,
 })
 
+// Only meant to be called as a response from the time
+// subscription
 export const SetTime = (state, now) => {
     let news = { ...state, timer: timer.update(state.timer, now) }
+    // if the timer has timed out, advance to the next question
     return !timer.isRunning(news.timer) ? Next(news) : news
 }
 
+// Selects one of the options as the current answer
 export const Answer = (state, answer) => ({
     ...state,
     questions: sequence.update(
@@ -59,31 +80,41 @@ export const Answer = (state, answer) => ({
     ),
 })
 
+// Advances to the next questio
 export const Next = state => {
     const questions = sequence.next(state.questions)
     return {
         ...state,
         questions,
+        //deactivate currently active lifelines
         bisection: lifeline.off(state.bisection),
         extension: lifeline.off(state.extension),
+        //if there is another question, restart the timer
+        //else stop it
         timer: sequence.item(questions)
             ? timer.start(state.timer)
             : timer.stop(state.timer),
     }
 }
 
+// Invoke the "bisect" lifeline
+// (= remove two incorrect options)
 export const Bisect = state =>
     lifeline.isUsed(state.bisection)
         ? state
         : {
               ...state,
               bisection: lifeline.on(state.bisection),
+              //since we might have removed the currently
+              //selected answer, turn off all answers
               questions: sequence.update(
                   state.questions,
                   question.unanswer(sequence.item(state.questions))
               ),
           }
 
+//Invoke the "extend" lifeline
+//(= add 10s to the timer)
 export const Extend = state =>
     lifeline.isUsed(state.extension)
         ? state
@@ -117,6 +148,9 @@ export const countCorrect = state => count(state, question.isCorrect)
 export const countIncorrect = state => count(state, question.isIncorrect)
 export const countUnanswered = state => count(state, question.isUnanswered)
 
+// Return the options for a question
+// which is normally all of them, except
+// when the bisect-lifeline is active
 export const getOptions = state => {
     if (!state.questions) return null
     let q = sequence.item(state.questions)
@@ -133,5 +167,7 @@ export const timeRemaining = state => timer.remaining(state.timer)
 
 export const isExtendUsed = state => lifeline.isUsed(state.extension)
 
+// if the extend lifeline is active, the timer duration is 10s more
+// that it usually is
 export const timeDuration = state =>
     TIMER_DURATION + (lifeline.isOn(state.extension) ? TIMER_EXTENSION : 0)

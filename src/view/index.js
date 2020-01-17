@@ -1,3 +1,16 @@
+/*
+    This is the main view file for the app. It exports a single function
+    which takes app-state as it's only argument. 
+
+    It composes several components imported from other files in the same
+    folder. It uses the model's queries to calculate properties to pass
+    to the components from the state.
+    
+    Actions, however, are imported from model by the components themselves
+    (since they don't depend on the state)
+
+*/
+
 import { h } from 'hyperapp'
 import * as model from '../model/index'
 import Options from './options'
