@@ -1,7 +1,7 @@
 export const question = q => q.question
 export const answer = (q, answer) => {
     let i = q.options.indexOf(answer)
-    return q < 0 ? q : { ...q, answer: i }
+    return { ...q, answer: i < 0 ? null : i }
 }
 export const unanswer = q => ({ ...q, answer: null })
 export const getAnswer = q =>

@@ -133,8 +133,5 @@ export const timeRemaining = state => timer.remaining(state.timer)
 
 export const isExtendUsed = state => lifeline.isUsed(state.extension)
 
-export const getTimerPercent = state => {
-    const duration =
-        TIMER_DURATION + (lifeline.isOn(state.extension) ? TIMER_EXTENSION : 0)
-    return Math.round((100 * timer.remaining(state.timer)) / duration)
-}
+export const timeDuration = state =>
+    TIMER_DURATION + (lifeline.isOn(state.extension) ? TIMER_EXTENSION : 0)
