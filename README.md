@@ -1,5 +1,9 @@
 # A Quiz Game
 
+***Try it live [here](https://zaceno.github.io/quiz/)***
+
+or:
+
 1. Clone the repo `git clone https://github.com/zaceno/quiz`
 2. Install dependencies: `npm install`
 3. Run tests: `npm test`
