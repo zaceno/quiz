@@ -32,6 +32,7 @@ header button {
     bottom: 15px;
     width: 55px;
     box-sizing: border-box;
+    cursor: pointer;
 }
 
 .game-container {
@@ -183,6 +184,7 @@ header button {
     line-height: 30px;
     box-shadow: rgba(0, 0, 0, 0.4) 0px 0px 3px;
     margin: 0.2em;
+    cursor: pointer;
 }
 
 .lifelines button.used {
@@ -214,6 +216,7 @@ header button {
     background-color: cornflowerblue;
     border: 2px blue solid;
     border-radius: 4px;
+    cursor: pointer;
 }
 
 .result-container {
