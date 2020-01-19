@@ -4,8 +4,7 @@
     "private": true,
     "description": "A Quiz game",
     "dependencies": {
-        "hyperapp": "^2.0.3",
-        "hyperapp-map": "^2.0.0"
+        "hyperapp": "^2.0.3"
     },
     "devDependencies": {
         "ava": "^2.4.0",
