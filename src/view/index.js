@@ -36,6 +36,10 @@ export default state => (
                     incorrect={model.countIncorrect(state)}
                     unanswered={model.countUnanswered(state)}
                 />
+                <p>
+                    Total time used:{' '}
+                    {Math.round(model.totalTimeTaken(state) / 1000)}s
+                </p>
             </main>
         ) : !model.getQuestion(state) ? (
             <main class="loading-container">

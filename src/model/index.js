@@ -43,7 +43,7 @@ export const subscriptions = state => [
 export const Reset = state => init
 
 export const Start = state => [
-    state,
+    { ...state, totalTime: 0 },
     fetchRandomIntList(POOL_SIZE, SERIES_LENGTH, SetList),
 ]
 
@@ -94,6 +94,9 @@ export const Next = state => {
         timer: sequence.item(questions)
             ? timer.start(state.timer)
             : timer.stop(state.timer),
+        //Increment the total time taken with remaining time
+        totalTime:
+            state.totalTime + (timeDuration(state) - timeRemaining(state)),
     }
 }
 
@@ -140,7 +143,8 @@ export const getAnswer = state => {
     return q ? question.getAnswer(q) : null
 }
 
-export const isEnded = state => sequence.isDone(state.questions)
+export const isEnded = state =>
+    state.questions && sequence.isDone(state.questions)
 
 const count = ({ questions }, filter) =>
     !questions ? null : sequence.items(questions).filter(filter).length
@@ -171,3 +175,5 @@ export const isExtendUsed = state => lifeline.isUsed(state.extension)
 // that it usually is
 export const timeDuration = state =>
     TIMER_DURATION + (lifeline.isOn(state.extension) ? TIMER_EXTENSION : 0)
+
+export const totalTimeTaken = state => (isEnded(state) ? state.totalTime : null)

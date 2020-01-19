@@ -272,3 +272,33 @@ test('timer can be extended just once in a series', t => {
     t.true(model.isExtendUsed(state))
     t.is(model.timeRemaining(state), TIMER_DURATION)
 })
+
+test('totalTimeTaken returns null if game is not ended', t => {
+    let state = model.init
+    t.is(model.totalTimeTaken(state), null)
+    state = StartWith(state, 1)
+    t.is(model.totalTimeTaken(state), null)
+})
+
+test('totalTimeTaken returns the total time taken', t => {
+    let state = StartWith(model.init, 2)
+    state = model.SetTime(state, 1000)
+    state = model.SetTime(state, 4000)
+    state = model.Next(state)
+    state = model.SetTime(state, 5000)
+    state = model.SetTime(state, 9000)
+    state = model.Next(state)
+    t.is(model.totalTimeTaken(state), 7000)
+})
+
+test('totalTimeTaken works regardless if Extend was used', t => {
+    let state = StartWith(model.init, 2)
+    state = model.SetTime(state, 1000)
+    state = model.SetTime(state, 4000)
+    state = model.Next(state)
+    state = model.SetTime(state, 5000)
+    state = model.Extend(state)
+    state = model.SetTime(state, 9000)
+    state = model.Next(state)
+    t.is(model.totalTimeTaken(state), 7000)
+})
