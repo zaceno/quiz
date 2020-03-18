@@ -58,7 +58,7 @@ DOM, defined as a pure function of the state in the app's `view` function. (For 
 
 ### Functions, No Classes
 
-Hyperapp is based on "[The Elm Architecture](https://github.com/dwyl/learn-elm-architecture-in-javascript/issues/38)" and firmly rooted in the functional-programming paradigm. For this reason, thera are no `this` or `class` or `prototype`
+Hyperapp is based on "[The Elm Architecture](https://github.com/dwyl/learn-elm-architecture-in-javascript/issues/38)" and firmly rooted in the functional-programming paradigm. For this reason, ther are no `this` or `class` or `prototype`
 in the code.
 
 Everything is just functions, mostly using `const name = arg => ...` rather than `function name (arg) {...}`, and names are almost always `camelCase` (exceptions: see below).
