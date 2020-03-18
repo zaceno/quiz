@@ -53,7 +53,7 @@ is not due to my code, nor Hyperapp but a rendering-bug in Safari when using css
 I implemented this using the [Hyperapp](https://hyperapp.dev) micro-framework. There is a single, global _state_ for the
 app which is transformed by dispatching _actions_ in response to DOM events. The DOM is kept in sync with a virtual
 DOM, defined as a pure function of the state in the app's `view` function. (For more, see
-[the official tutorial](https://github.com/jorgebucaran/hyperapp/blob/master/docs/tutorial.md) I wrote, or [this Medium article](https://medium.com/hyperapp/a-walk-through-hyperapp-2-b1f642fca172))
+[the official tutorial](https://hyperapp.dev/tutorial) I wrote, or [this Medium article](https://medium.com/hyperapp/a-walk-through-hyperapp-2-b1f642fca172))
 
 ### Functions, No Classes
 
