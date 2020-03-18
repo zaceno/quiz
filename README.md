@@ -27,9 +27,6 @@ is not due to my code, nor Hyperapp but a rendering-bug in Safari when using css
         ...
     test/               -- test files
         ...
-    fx/                 -- imperative, impure code defined as Hyperapp effects &
-                           subscriptions
-        ...
     src/
         index.html      -- base html file for the app.
         style.css       -- styles
@@ -45,6 +42,10 @@ is not due to my code, nor Hyperapp but a rendering-bug in Safari when using css
             options.js  
             results.js
             etc...
+        fx/             -- imperative, impure code defined as Hyperapp effects &
+                           subscriptions
+            ...
+
 ```
 
 
